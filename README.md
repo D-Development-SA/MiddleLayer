@@ -1,14 +1,14 @@
 # MiddleLayer - Spring Boot + Keycloak + Elasticsearch
 
-**Repositorio**: [github.com/D-Development-SA/MiddleLayer](https://github.com/D-Development-SA/MiddleLayer.git)
+**Repository**: [github.com/D-Development-SA/MiddleLayer](https://github.com/D-Development-SA/MiddleLayer.git)
 
-Este proyecto es un **servidor intermedio** desarrollado en **Spring Boot**, que funciona como capa de autenticación y autorización entre un cliente y un servidor **Elasticsearch**. Utiliza **Keycloak** como servidor de identidad para asegurar los accesos mediante tokens JWT. Solo los usuarios autenticados pueden crear, consultar, actualizar o eliminar documentos en Elasticsearch.
+This project is a **middleware server** developed in **Spring Boot**, acting as an authentication and authorization layer between a client and an **Elasticsearch** server. It uses **Keycloak** as an identity server to secure access via JWT tokens. Only authenticated users can create, query, update, or delete documents in Elasticsearch.
 
-> Este proyecto es un ejemplo funcional y puede servir como base para desarrollos reales que requieran una arquitectura segura de servicios.
+> This is a functional example project that can serve as a base for real-world implementations requiring secure service architecture.
 
 ---
 
-## 🔧 Tecnologías utilizadas
+## 🔧 Technologies Used
 
 - Java 21  
 - Spring Boot  
@@ -19,16 +19,16 @@ Este proyecto es un **servidor intermedio** desarrollado en **Spring Boot**, que
 
 ---
 
-## 🚀 Ejecución del proyecto
+## 🚀 Project Execution
 
-### 1. Clonar el repositorio
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/D-Development-SA/MiddleLayer.git
 cd MiddleLayer
 ```
 
-### 2. Iniciar Keycloak (puerto 8080)
+### 2. Start Keycloak (Port 8080)
 
 ```bash
 docker run -p 8080:8080 \\
@@ -37,17 +37,17 @@ docker run -p 8080:8080 \\
   quay.io/keycloak/keycloak:24.0.1 start-dev
 ```
 
-- Crear un Realm (ejemplo: demo-realm)
-- Crear un cliente con Access Type: bearer-only
-- Crear un usuario y asignar los roles necesarios
+- Create a Realm (e.g., `demo-realm`)
+- Create a client with **Access Type**: `bearer-only`
+- Create a user and assign required roles
 
-### 3. Iniciar Elasticsearch (puerto 9200)
+### 3. Start Elasticsearch (Port 9200)
 
 ```bash
 docker run -p 9200:9200 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:8.12.0
 ```
 
-### 4. Iniciar el servidor Spring Boot (puerto 8081)
+### 4. Start Spring Boot Server (Port 8081)
 
 ```bash
 ./mvnw spring-boot:run
@@ -55,11 +55,11 @@ docker run -p 9200:9200 -e "discovery.type=single-node" docker.elastic.co/elasti
 
 ---
 
-## 🔐 Autenticación con Keycloak
+## 🔐 Keycloak Authentication
 
-Para interactuar con el servidor, se necesita un token JWT válido emitido por Keycloak.
+To interact with the server, you need a valid JWT token issued by Keycloak.
 
-### Obtener el token
+### Get Token
 
 ```bash
 curl -X POST \\
@@ -67,11 +67,11 @@ curl -X POST \\
   -H "Content-Type: application/x-www-form-urlencoded" \\
   -d "grant_type=password" \\
   -d "client_id=middle-layer-client" \\
-  -d "username=usuario" \\
-  -d "password=contrasena"
+  -d "username=user" \\
+  -d "password=password"
 ```
 
-### Incluir el token en los headers
+### Include Token in Headers
 
 ```http
 Authorization: Bearer <access_token>
@@ -79,26 +79,26 @@ Authorization: Bearer <access_token>
 
 ---
 
-## 📂 Estructura clave del proyecto
+## 📂 Core Project Structure
 
-El proyecto incluye dos configuraciones esenciales:
+The project includes two essential configurations:
 
-1. Configuración de Elasticsearch: Define los beans necesarios para establecer conexión y realizar operaciones con el clúster.
-2. Configuración de Seguridad: Aplica seguridad basada en tokens JWT mediante el módulo de OAuth2 Resource Server de Spring Security.
+1. **Elasticsearch Configuration**: Defines beans to connect and interact with the Elasticsearch cluster.
+2. **Security Configuration**: Implements JWT-based security using Spring Security's OAuth2 Resource Server.
 
 ---
 
-## 📌 Endpoints disponibles (/v1)
+## 📌 Available Endpoints (/v1)
 
-Todos los endpoints requieren autenticación previa con JWT.
+All endpoints require JWT authentication.
 
-### 🔍 Obtener todos los documentos de un índice
+### 🔍 Get All Documents in an Index
 
 ```http
 GET /v1/{index}
 ```
 
-**Ejemplo**:
+**Example**:
 
 ```http
 GET /v1/products
@@ -111,24 +111,24 @@ Authorization: Bearer <token>
 [
   {
     "id": "123",
-    "nombre": "Producto A",
+    "nombre": "Product A",
     "precio": 15.5
   },
   {
     "id": "456",
-    "nombre": "Producto B",
+    "nombre": "Product B",
     "precio": 30.0
   }
 ]
 ```
 
-### 📄 Buscar un documento por ID
+### 📄 Get Document by ID
 
 ```http
 GET /v1/findById/{id}+{index}
 ```
 
-**Ejemplo**:
+**Example**:
 
 ```http
 GET /v1/findById/123+products
@@ -140,12 +140,12 @@ Authorization: Bearer <token>
 ```json
 {
   "id": "123",
-  "nombre": "Producto A",
+  "nombre": "Product A",
   "precio": 15.5
 }
 ```
 
-### 📝 Crear o actualizar documento
+### 📝 Create/Update Document
 
 ```http
 POST /v1/createOrUpdate/{index}+{id}
@@ -161,7 +161,7 @@ Content-Type: application/json
 
 ```json
 {
-  "nombre": "Producto A",
+  "nombre": "Product A",
   "precio": 15.5
 }
 ```
@@ -170,17 +170,17 @@ Content-Type: application/json
 
 ```json
 {
-  "message": "Documento creado/actualizado exitosamente"
+  "message": "Document created/updated successfully"
 }
 ```
 
-### ❌ Eliminar documento
+### ❌ Delete Document
 
 ```http
 DELETE /v1/delete+{id}+{index}
 ```
 
-**Ejemplo**:
+**Example**:
 
 ```http
 DELETE /v1/delete+123+products
@@ -191,22 +191,24 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "message": "Documento eliminado exitosamente"
+  "message": "Document deleted successfully"
 }
 ```
 
 ---
 
-## 📘 Tabla resumen de endpoints
+## 📘 Endpoint Summary Table
 
-| Método | Endpoint                        | Descripción                     | Autenticación |
-|--------|---------------------------------|---------------------------------|---------------|
-| GET    | /v1/{index}                    | Obtener todos los documentos    | ✅            |
-| GET    | /v1/findById/{id}+{index}      | Obtener documento por ID       | ✅            |
-| POST   | /v1/createOrUpdate/{index}+{id} | Crear o actualizar documento    | ✅            |
-| DELETE | /v1/delete+{id}+{index}        | Eliminar documento por ID       | ✅            |
+| Method | Endpoint                        | Description                     | Authentication |
+|--------|---------------------------------|---------------------------------|----------------|
+| GET    | `/v1/{index}`                  | Get all documents               | ✅ Required    |
+| GET    | `/v1/findById/{id}+{index}`    | Get document by ID              | ✅ Required    |
+| POST   | `/v1/createOrUpdate/{index}+{id}` | Create/update document          | ✅ Required    |
+| DELETE | `/v1/delete+{id}+{index}`      | Delete document by ID           | ✅ Required    |
 
-**🔐 Todos los endpoints requieren incluir el token en el header**:  
+**🔐 All endpoints require the token in the header**:  
 ```http
 Authorization: Bearer <access_token>
 ```
+
+---
